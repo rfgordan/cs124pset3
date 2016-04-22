@@ -1,4 +1,4 @@
-import java.io.PrintStream;
+import java.io.*;
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Random;
@@ -8,7 +8,7 @@ import java.util.Collections;
 
 
 public class numberpartition {
-    public static void main(String [] args){
+    public static void main(String [] args) throws FileNotFoundException{
         PrintStream ps = new PrintStream(System.out);
 
         
@@ -31,11 +31,11 @@ public class numberpartition {
         int[] test = {10,8,7,6,5};
         
         //print output
-        int residue = kk(test);
+        int residue = kk(test,5);
         ps.printf("%d\n",residue);
     } 
     
-    public static int kk(int [] input){
+    public static int kk(int [] input, int length){
         //make sets for debugging purposes
         ArrayList<Integer> set1 = new ArrayList<>();
         ArrayList<Integer> set2 = new ArrayList<>();
@@ -43,7 +43,7 @@ public class numberpartition {
         PriorityQueue<Integer> heap = new PriorityQueue<>(100,Collections.reverseOrder());
         
         //add all items to heap
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < length; i++){
             heap.offer(input[i]);
         }
         
