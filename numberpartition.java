@@ -11,7 +11,7 @@ public class numberpartition {
     public static void main(String [] args) throws FileNotFoundException{
         PrintStream ps = new PrintStream(System.out);
 
-
+        /*
         //ensure proper arguments
         if(args.length != 2){
             ps.printf("Input should be of the form: ./kk inputfile, 100 integers in file \n");
@@ -29,10 +29,24 @@ public class numberpartition {
         }
 
         int[] test = {10,8,7,6,5};
-
+        */
+        
+        //partition generation/move tests
+        int [] P = randomPartGen(10);
+        solPrint(P);
+        randomPartMove(P);
+        solPrint(P);
+        randomPartMove(P);
+        solPrint(P);
+        randomPartMove(P);
+        solPrint(P);
+        
+        
+        /*
         //print output
         int residue = kk(test,5);
         ps.printf("%d\n",residue);
+        */
 
     } 
     
@@ -78,7 +92,7 @@ public class numberpartition {
     /**
      * Perform a random move on set s
      */
-    public static void randomMove(int[] s) {
+    public static void randomStandardMove(int[] s) {
         // random indices
         int i = 0;
         int j = 0;
@@ -123,6 +137,45 @@ public class numberpartition {
         return sol;
     }
 
+    /**
+     * Generate a random partition of size n 
+     */
+    public static int[] randomPartGen(int n){
+        int[] partition = new int[n];
+        for(int i = 0; i < n; i++){
+            int part = (int)(Math.random()*n);
+            partition[i] = part;
+        }
+        return partition;
+    }
+    
+    /** 
+     * Perform a random move on partition P, given existing partition
+     */
+    public static void randomPartMove(int[] P){
+        //index  i whose partition number p_i will change
+        int from_index;
+        //index j the partition p_i will change to
+        int to_index;
+        
+        int length = P.length;
+        
+        from_index = (int)(Math.random()*length);
+        
+        to_index = (int)(Math.random()*(length-1));
+        
+        //if equal, increment in order to align range of to_index w/ from_index
+        if(to_index==P[from_index]){
+            ++to_index;
+        }
+        
+        P[from_index] = to_index;
+        
+        
+        
+        
+    }
+    
     /**
      * Print a solution array
      */
