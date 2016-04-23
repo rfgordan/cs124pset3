@@ -89,9 +89,39 @@ public class numberpartition {
     /**
      * Repeated random algorithm with standard representation
      */
-    public static void standardRepeatedRandom(int[] S, long[] A) {
+    public static int[] standardRepeatedRandom(int[] S, long[] A) {
+        int[] randSol;
+        for (int i = 0; i < max_iter; i++) {
+            randSol = standardRandomSolGen(S.length);
+            if (standardResidue(randSol, A) < standardResidue(S, A)) {
+                S = randSol;
+            }
+        }
 
+        return S;
     }
+
+    /**
+     * Hill climbing algorithm with standard representation
+     */
+    public static int[] standardHillClimbing(int[] S, long[] A) {
+        int[] neighbor;
+        for (int i = 0; i < max_iter; i++) {
+            neighbor = standardRandomMove(S);
+            if (standardResidue(neighbor, A) < standardResidue(S, A)) {
+                S = neighbor;
+            }
+        }
+
+        return S;
+    }
+
+    /**
+     * Simulated annealing algorithm with standard representation
+     */
+//    public static int[] standardSimulatedAnnealing(int[] S, long[] A) {
+//
+//    }
 
     /**
      * Calculates the residue
@@ -111,20 +141,25 @@ public class numberpartition {
     /**
      * Perform a random move on set s
      */
-    public static void standardRandomMove(int[] s) {
+    public static int[] standardRandomMove(int[] S) {
+        int[] rmove = new int[S.length];
+        System.arraycopy(S, 0, rmove, 0, S.length);
+
         // random indices
         int i = 0;
         int j = 0;
         while (i == j) {
-            i = (int) (Math.random() * s.length);
-            j = (int) (Math.random() * s.length);
+            i = (int) (Math.random() * rmove.length);
+            j = (int) (Math.random() * rmove.length);
         }
         // switch first index always
-        s[i] = 0 - s[i];
+        rmove[i] = 0 - rmove[i];
         // switch second index with prob 0.5
         if (Math.random() < 0.5) {
-            s[j] = 0 - s[j];
+            rmove[j] = 0 - rmove[j];
         }
+
+        return rmove;
     }
 
     /**
