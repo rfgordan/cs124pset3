@@ -11,6 +11,8 @@ public class numberpartition {
     
     //number of iterations for approximation algorithms
     public static final int max_iter = 25000;
+    public static final long bound = 100L;
+    public static final int setsize = 100;
     
     public static void main(String [] args) throws FileNotFoundException{
         
@@ -54,7 +56,28 @@ public class numberpartition {
         long residue = hillPartClimb(test);
         ps.printf("%d\n",residue);
         
-
+        /*
+        // tests of standard representation algorithms
+         
+        int[] S = standardRandomSolGen(setsize);
+        long[] A = standardRandomSetGen(setsize);
+        System.out.printf("Karmarkar-Karp residue: %d\n", kk(A));
+        System.out.printf("Original residue: %d\n", standardResidue(S, A));
+        //setPrint(A);
+        //solPrint(S);
+        int[] S_a = standardRepeatedRandom(S, A);
+        System.out.printf("Repeated Random residue: %d\n", standardResidue(S_a, A));
+        //setPrint(A);
+        //solPrint(S_a);
+        int[] S_b = standardHillClimbing(S, A);
+        System.out.printf("Hill Climbing residue: %d\n", standardResidue(S_b, A));
+        //setPrint(A);
+        //solPrint(S_b);
+        int[] S_c = standardSimulatedAnnealing(S, A);
+        System.out.printf("Simulated Annealing residue: %d\n", standardResidue(S_c, A));
+        //setPrint(A);
+        //solPrint(S_c);
+        */
     } 
     
     public static long kk(long [] input){
@@ -90,11 +113,11 @@ public class numberpartition {
      * Repeated random algorithm with standard representation
      */
     public static int[] standardRepeatedRandom(int[] S, long[] A) {
-        int[] randSol;
+        int[] S_1;
         for (int i = 0; i < max_iter; i++) {
-            randSol = standardRandomSolGen(S.length);
-            if (standardResidue(randSol, A) < standardResidue(S, A)) {
-                S = randSol;
+            S_1 = standardRandomSolGen(S.length);
+            if (standardResidue(S_1, A) < standardResidue(S, A)) {
+                S = S_1;
             }
         }
 
@@ -105,11 +128,11 @@ public class numberpartition {
      * Hill climbing algorithm with standard representation
      */
     public static int[] standardHillClimbing(int[] S, long[] A) {
-        int[] neighbor;
+        int[] S_1;
         for (int i = 0; i < max_iter; i++) {
-            neighbor = standardRandomMove(S);
-            if (standardResidue(neighbor, A) < standardResidue(S, A)) {
-                S = neighbor;
+            S_1 = standardRandomMove(S);
+            if (standardResidue(S_1, A) < standardResidue(S, A)) {
+                S = S_1;
             }
         }
 
@@ -119,9 +142,32 @@ public class numberpartition {
     /**
      * Simulated annealing algorithm with standard representation
      */
-//    public static int[] standardSimulatedAnnealing(int[] S, long[] A) {
-//
-//    }
+    public static int[] standardSimulatedAnnealing(int[] S, long[] A) {
+        int[] S_1;
+        int[] S_2 = new int[S.length];
+        System.arraycopy(S, 0, S_2, 0, S.length);
+
+        for (int i = 0; i < max_iter; i++) {
+            S_1 = standardRandomMove(S);
+            if (standardResidue(S_1, A) < standardResidue(S, A)) {
+                S = S_1;
+            } else if (Math.random() < Math.exp(0 - (standardResidue(S_1, A) - standardResidue(S, A)) / T(i))) {
+                    S = S_1;
+                }
+            if (standardResidue(S, A) < standardResidue(S_2, A)) {
+                S_2 = S;
+            }
+        }
+
+        return S_2;
+    }
+
+    /**
+     * Cooling schedule function
+     */
+    public static double T(int iter) {
+        return Math.pow(10, 10) * Math.pow(0.8, iter / 300.0);
+    }
 
     /**
      * Calculates the residue
@@ -178,7 +224,6 @@ public class numberpartition {
      * Generate a random long between 1 and 10^12
      */
     public static long randomLong() {
-        long bound = 1000000000000L;
         return (long)Math.ceil((Math.random() * bound));
     }
 
@@ -187,18 +232,15 @@ public class numberpartition {
      */
     public static int[] standardRandomSolGen(int n) {
         int sol[] = new int[n];
-        int counter = 0;
 
         for (int i = 0; i < n; i++) {
             if (Math.random() < 0.5) {
                 sol[i] = 1;
-                counter += 1;
             } else {
                 sol[i] = -1;
             }
         }
 
-        System.out.println((double)counter / n);
         return sol;
     }
     
@@ -337,9 +379,9 @@ public class numberpartition {
      * Print an array of non-negative integers (long)
      */
     public static void setPrint(long[] sol) {
-        System.out.printf("[%12d", sol[0]);
+        System.out.printf("[%2d", sol[0]);
         for (int i = 1; i < sol.length; i++) {
-            System.out.printf("|%12d", sol[i]);
+            System.out.printf("|%2d", sol[i]);
         }
         System.out.printf("]\n");
     }
