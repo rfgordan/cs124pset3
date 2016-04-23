@@ -34,19 +34,19 @@ public class numberpartition {
         }
         */
         
-        long[] test = {10,8,7,6,5,10,4,4,13,5};
+        long[] test = {10,8,7,6,5,10,4,3,13,5};
         
         
         /*
         //partition generation/move tests
         int [] P = randomPartGen(10);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         */
         
         
@@ -120,7 +120,7 @@ public class numberpartition {
      * Simulated annealing algorithm with standard representation
      */
 //    public static int[] standardSimulatedAnnealing(int[] S, long[] A) {
-//
+//        
 //    }
 
     /**
@@ -261,6 +261,41 @@ public class numberpartition {
         
         //return residue of final partition
         return prev_res;
+    }
+    
+    /**
+     * Returns residue from simulated annealing on prepartitioned set
+     */
+    public static long simularedPartAnnealing(long[] A){
+        int length = A.length;
+        
+        int[] P = randomPartGen(length);
+        int[] P2 = P.clone();
+        int[] P3 = P.clone();
+        
+        
+        long min_res = partitionResidue(P,A);
+        long prev_res = min_res;
+        long new_res = -1;
+        
+        for(int i = 0; i < max_iter; i++){
+            randomPartMove(P2);
+            new_res = partitionResidue(P2,A);
+            if(new_res < prev_res){
+                P = P2.clone();
+                prev_res = new_res;
+            }else if(Math.random() < Math.exp((double)(-(new_res-prev_res)/(((10000000000L)*Math.pow(0.8, i/300.0)))))){
+                P = P2.clone();
+                prev_res = new_res;
+            }
+            if(prev_res < min_res){
+                P3 = P.clone();
+                min_res = prev_res;
+            }
+        }
+        
+        return min_res;
+        
     }
     
     /**
