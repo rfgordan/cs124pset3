@@ -9,6 +9,7 @@ import java.lang.Math;
 
 public class numberpartition {
     public static void main(String [] args) throws FileNotFoundException{
+        
         PrintStream ps = new PrintStream(System.out);
 
 
@@ -60,25 +61,35 @@ public class numberpartition {
         return heap.poll();
 
 
-// TEST STUFF FOR RANDOM REPRESENTATION
-//        int[] sol = randomSolGen(3);
-//        solPrint(sol);
-//        randomMove(sol);
-//        solPrint(sol);
 
     }
 
     /**
      * Repeated random algorithm with standard representation
      */
-    public static void repeatedRandom() {
-        // TODO
+    public static void standardRepeatedRandom(int[] S, long[] A) {
+
+    }
+
+    /**
+     * Calculates the residue
+     */
+    public static long standardResidue(int[] S, long[] A) {
+        long residue = 0;
+        for (int i = 0; i < S.length; i++) {
+            residue += S[i] * A[i];
+        }
+        if (residue < 0) {
+            residue = 0 - residue;
+        }
+
+        return residue;
     }
 
     /**
      * Perform a random move on set s
      */
-    public static void randomMove(int[] s) {
+    public static void standardRandomMove(int[] s) {
         // random indices
         int i = 0;
         int j = 0;
@@ -97,16 +108,27 @@ public class numberpartition {
     /**
      * Generate random set of n elements
      */
-    public static int[] randomSetGen(int n) {
-        // TODO
-        int[] some = new int[1];
-        return some;
+    public static long[] standardRandomSetGen(int n) {
+        long[] set = new long[n];
+        for (int i = 0; i < n; i++) {
+            set[i] = randomLong();
+        }
+
+        return set;
+    }
+
+    /**
+     * Generate a random long between 1 and 10^12
+     */
+    public static long randomLong() {
+        long bound = 1000000000000L;
+        return (long)Math.ceil((Math.random() * bound));
     }
 
     /**
      * Generate a random solution of n elements
      */
-    public static int[] randomSolGen(int n) {
+    public static int[] standardRandomSolGen(int n) {
         int sol[] = new int[n];
         int counter = 0;
 
@@ -130,6 +152,17 @@ public class numberpartition {
         System.out.printf("[%2d", sol[0]);
         for (int i = 1; i < sol.length; i++) {
             System.out.printf("|%2d", sol[i]);
+        }
+        System.out.printf("]\n");
+    }
+
+    /**
+     * Print an array of non-negative integers (long)
+     */
+    public static void setPrint(long[] sol) {
+        System.out.printf("[%12d", sol[0]);
+        for (int i = 1; i < sol.length; i++) {
+            System.out.printf("|%12d", sol[i]);
         }
         System.out.printf("]\n");
     }
