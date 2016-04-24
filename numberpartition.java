@@ -11,7 +11,7 @@ public class numberpartition {
     
     //number of iterations for approximation algorithms
     public static final int max_iter = 25000;
-    public static final long bound = 100L;
+    public static final long bound = 1000000000000L;
     public static final int setsize = 100;
     
     public static void main(String [] args) throws FileNotFoundException{
@@ -36,50 +36,76 @@ public class numberpartition {
         }
         */
         
-        long[] test = {10,8,7,6,5,10,4,4,13,5};
+        long[] test = {10,8,7,6,5,10,4,3,13,5};
         
         
         /*
         //partition generation/move tests
         int [] P = randomPartGen(10);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         randomPartMove(P);
-        solPrint(P);
+        setPrint(P);
         */
         
         
         //print output
         long residue = hillPartClimb(test);
         ps.printf("%d\n",residue);
-        
-        /*
-        // tests of standard representation algorithms
-         
-        int[] S = standardRandomSolGen(setsize);
-        long[] A = standardRandomSetGen(setsize);
-        System.out.printf("Karmarkar-Karp residue: %d\n", kk(A));
-        System.out.printf("Original residue: %d\n", standardResidue(S, A));
-        //setPrint(A);
-        //solPrint(S);
-        int[] S_a = standardRepeatedRandom(S, A);
-        System.out.printf("Repeated Random residue: %d\n", standardResidue(S_a, A));
-        //setPrint(A);
-        //solPrint(S_a);
-        int[] S_b = standardHillClimbing(S, A);
-        System.out.printf("Hill Climbing residue: %d\n", standardResidue(S_b, A));
-        //setPrint(A);
-        //solPrint(S_b);
-        int[] S_c = standardSimulatedAnnealing(S, A);
-        System.out.printf("Simulated Annealing residue: %d\n", standardResidue(S_c, A));
-        //setPrint(A);
-        //solPrint(S_c);
-        */
-    } 
-    
+
+
+        // log data into CSV file
+        try {
+            FileWriter writer = new FileWriter("results.csv");
+            // 50 random instances
+            for (int i = 1; i <= 50; i++) {
+                long[] A = standardRandomSetGen(setsize);
+                int[] S = standardRandomSolGen(setsize);
+                // original residue
+                writer.append(String.valueOf(standardResidue(S, A)));
+                writer.append(',');
+                // KK residue
+                writer.append(String.valueOf(kk(A)));
+                writer.append(',');
+                // Standard Repeated Random residue
+                int[] S_a = standardRepeatedRandom(S, A);
+                writer.append(String.valueOf(standardResidue(S_a, A)));
+                writer.append(',');
+                // Standard Hill Climbing residue
+                int[] S_b = standardHillClimbing(S, A);
+                writer.append(String.valueOf(standardResidue(S_b, A)));
+                writer.append(',');
+                // Standard Simulated Annealing residue
+                int[] S_c = standardSimulatedAnnealing(S, A);
+                writer.append(String.valueOf(standardResidue(S_c, A)));
+                writer.append(',');
+                // Prepartitioning Repeated Random residue
+                long res_a = repeatedPartRandom(A);
+                writer.append(String.valueOf(res_a));
+                writer.append(',');
+                // Prepartitioning Hill Climbing residue
+                long res_b = hillPartClimb(A);
+                writer.append(String.valueOf(res_b));
+                writer.append(',');
+                // Prepartitioning Simulated Annealing residue
+                long res_c = simularedPartAnnealing(A);
+                writer.append(String.valueOf(res_c));
+                writer.append('\n');
+            }
+
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Karmarkar-Karp Algorithm implementation
+     */
     public static long kk(long [] input){
 
         int length = input.length;
@@ -303,6 +329,41 @@ public class numberpartition {
         
         //return residue of final partition
         return prev_res;
+    }
+    
+    /**
+     * Returns residue from simulated annealing on prepartitioned set
+     */
+    public static long simularedPartAnnealing(long[] A){
+        int length = A.length;
+        
+        int[] P = randomPartGen(length);
+        int[] P2 = P.clone();
+        int[] P3 = P.clone();
+        
+        
+        long min_res = partitionResidue(P,A);
+        long prev_res = min_res;
+        long new_res = -1;
+        
+        for(int i = 0; i < max_iter; i++){
+            randomPartMove(P2);
+            new_res = partitionResidue(P2,A);
+            if(new_res < prev_res){
+                P = P2.clone();
+                prev_res = new_res;
+            }else if(Math.random() < Math.exp((-(new_res-prev_res)/(((10000000000L)*Math.pow(0.8, i/300.0)))))){
+                P = P2.clone();
+                prev_res = new_res;
+            }
+            if(prev_res < min_res){
+                P3 = P.clone();
+                min_res = prev_res;
+            }
+        }
+        
+        return min_res;
+        
     }
     
     /**
