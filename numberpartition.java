@@ -18,25 +18,24 @@ public class numberpartition {
         
         PrintStream ps = new PrintStream(System.out);
 
-        /*
         //ensure proper arguments
-        if(args.length != 2){
+        if(args.length > 1){
             ps.printf("Input should be of the form: ./kk inputfile, 100 integers in file \n");
             return;
         }
 
         //create file reader
         Scanner s;
-        s = new Scanner(new BufferedReader(new FileReader(args[1])));
+        s = new Scanner(new BufferedReader(new FileReader(args[0])));
 
         //load numbers from file into array
-        int[] nums = new int[100];
+        long[] nums = new long[100];
         for(int i = 0; i < 100; i++){
-            nums[i] = s.nextInt();
+            nums[i] = s.nextLong();
         }
-        */
         
-        long[] test = {10,8,7,6,5,10,4,3,13,5};
+        
+        //long[] test = {10,8,7,6,5,10,4,3,13,5};
         
         
         /*
@@ -53,10 +52,10 @@ public class numberpartition {
         
         
         //print output
-        long residue = hillPartClimb(test);
-        ps.printf("%d\n",residue);
+        long file_residue = kk(nums);
+        ps.printf("%d\n",file_residue);
 
-
+        /*
         // log data into CSV file
         try {
             FileWriter writer = new FileWriter("results.csv");
@@ -101,6 +100,7 @@ public class numberpartition {
         } catch(IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     /**
@@ -109,10 +109,6 @@ public class numberpartition {
     public static long kk(long [] input){
 
         int length = input.length;
-        
-        //make sets for debugging purposes
-        ArrayList<Integer> set1 = new ArrayList<>();
-        ArrayList<Integer> set2 = new ArrayList<>();
 
         PriorityQueue<Long> heap = new PriorityQueue<>(100,Collections.reverseOrder());
 

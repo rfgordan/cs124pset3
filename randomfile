@@ -1,0 +1,12 @@
+#!/bin/bash
+#generates a file
+#with one random integer per line
+
+if [ $# -ne 2 ]; then
+    echo "usage: randfile n_lines filename"
+else
+    for ((c=1; c<=$1; c++)); do
+    	echo $RANDOM >> $2;
+    done
+fi
+ 
